@@ -34,7 +34,7 @@ fun CurrencyScreen(viewModel: MainViewModel) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("💎 Currency & Stats Page", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text("Favor & Progress", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
 
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -49,7 +49,7 @@ fun CurrencyScreen(viewModel: MainViewModel) {
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("📊 Productivity Report Calculations", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("Productivity Summary", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text("Total Tasks: $totalTasks")
                 Text("Completed Tasks: $completedTasks")
                 Text("Completion Rate: %.1f%%".format(completionRate), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)

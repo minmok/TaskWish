@@ -107,6 +107,7 @@ class GameRepository(
         val state = ensureUserState()
         if (state.currency < GachaEngine.PULL_COST) return null
         val pool = buildPool()
+        if (!pool.hasAnyReward()) return null
         val (result, updatedState) = GachaEngine.rollOnce(state, pool)
         userStateDao.upsert(updatedState.copy(currency = state.currency - GachaEngine.PULL_COST))
         bumpTimesWon(result)
@@ -117,6 +118,7 @@ class GameRepository(
         val state = ensureUserState()
         if (state.currency < GachaEngine.MULTI_PULL_COST) return null
         val pool = buildPool()
+        if (!pool.hasAnyReward()) return null
         val (results, updatedState) = GachaEngine.rollFive(state, pool)
         userStateDao.upsert(updatedState.copy(currency = state.currency - GachaEngine.MULTI_PULL_COST))
         results.forEach { bumpTimesWon(it) }
@@ -133,18 +135,20 @@ class GameRepository(
         userStateDao.upsert(state.copy(pity5Counter = 0, pity4Counter = 0, guaranteed5 = false))
     }
 
-    suspend fun devFreePullSingle(): PullResult {
+    suspend fun devFreePullSingle(): PullResult? {
         val state = ensureUserState()
         val pool = buildPool()
+        if (!pool.hasAnyReward()) return null
         val (result, updatedState) = GachaEngine.rollOnce(state, pool)
         userStateDao.upsert(updatedState)
         bumpTimesWon(result)
         return result
     }
 
-    suspend fun devFreePullFive(): List<PullResult> {
+    suspend fun devFreePullFive(): List<PullResult>? {
         val state = ensureUserState()
         val pool = buildPool()
+        if (!pool.hasAnyReward()) return null
         val (results, updatedState) = GachaEngine.rollFive(state, pool)
         userStateDao.upsert(updatedState)
         results.forEach { bumpTimesWon(it) }
