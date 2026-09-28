@@ -43,7 +43,7 @@ fun RewardsInventoryScreen(viewModel: MainViewModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("🎒 Rewards Inventory", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Tap any won reward to use it and log it as redeemed:", style = MaterialTheme.typography.bodyMedium)
+        Text("Tap any available reward to use 1x from your inventory:", style = MaterialTheme.typography.bodyMedium)
 
         if (wonRewards.isEmpty()) {
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -105,31 +105,66 @@ private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
                 if (reward.description.isNotBlank()) {
                     Text(reward.description, style = MaterialTheme.typography.bodySmall)
                 }
-                Text("Won: ${reward.timesWon}x · Used: ${reward.timesUsed}x", style = MaterialTheme.typography.labelSmall, color = color)
+                
+                val remainingText = if (reward.remainingCount > 0) {
+                    "In Inventory: ${reward.remainingCount}x · Total Used: ${reward.timesUsed}x"
+                } else {
+                    "Out of Stock (Used all ${reward.timesUsed}x)"
+                }
+                
+                Text(
+                    remainingText,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (reward.remainingCount > 0) color else MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
 
     if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Use Reward?") },
-            text = { Text("Do you want to use \"${reward.name}\"? This will log it as redeemed.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onUse()
-                        showDialog = false
+        if (reward.remainingCount > 0) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Use Reward?") },
+                text = {
+                    Text(
+                        "Do you want to use 1x \"${reward.name}\"?\n\n" +
+                        "Remaining in inventory: ${reward.remainingCount} -> ${reward.remainingCount - 1}"
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            onUse()
+                            showDialog = false
+                        }
+                    ) {
+                        Text("Yes, Use 1x")
                     }
-                ) {
-                    Text("Yes")
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Cancel")
+                    }
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("No")
+            )
+        } else {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("No Items Remaining") },
+                text = {
+                    Text(
+                        "You have 0 \"${reward.name}\" left in your inventory.\n\n" +
+                        "Complete tasks, earn Favor, and pull in the Wish Banner to win more!"
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Got it")
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }

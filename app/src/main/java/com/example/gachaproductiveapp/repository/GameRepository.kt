@@ -146,6 +146,8 @@ class GameRepository(
     }
 
     suspend fun useReward(reward: Reward) {
-        rewardDao.update(reward.copy(timesUsed = reward.timesUsed + 1))
+        if (reward.remainingCount > 0) {
+            rewardDao.update(reward.copy(timesUsed = reward.timesUsed + 1))
+        }
     }
 }

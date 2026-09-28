@@ -15,4 +15,7 @@ data class Reward(
     val timesWon: Int = 0,
     val imageUrl: String = "",
     val timesUsed: Int = 0
-)
+) {
+    val remainingCount: Int
+        get() = (timesWon - timesUsed).coerceAtLeast(0)
+}
