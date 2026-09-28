@@ -18,6 +18,9 @@ interface RewardDao {
     @Update
     suspend fun update(reward: Reward)
 
+    @Delete
+    suspend fun delete(reward: Reward)
+
     @Query("SELECT * FROM rewards WHERE rarity = :rarity")
     suspend fun getByRarity(rarity: Rarity): List<Reward>
 
@@ -26,7 +29,4 @@ interface RewardDao {
 
     @Query("SELECT * FROM rewards WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): Reward?
-
-    @Delete
-    suspend fun delete(reward: Reward)
 }

@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,6 +54,21 @@ import coil.compose.AsyncImage
 import com.example.gachaproductiveapp.data.Rarity
 import com.example.gachaproductiveapp.logic.GachaEngine
 import com.example.gachaproductiveapp.logic.PullResult
+import com.example.gachaproductiveapp.ui.components.GlassCard
+import com.example.gachaproductiveapp.ui.components.GradientButton
+import com.example.gachaproductiveapp.ui.components.RarityBadge
+import com.example.gachaproductiveapp.ui.components.SectionHeader
+import com.example.gachaproductiveapp.ui.theme.DarkBackground
+import com.example.gachaproductiveapp.ui.theme.DarkSurface
+import com.example.gachaproductiveapp.ui.theme.DarkSurfaceVariant
+import com.example.gachaproductiveapp.ui.theme.PrimaryGold
+import com.example.gachaproductiveapp.ui.theme.Rarity3Star
+import com.example.gachaproductiveapp.ui.theme.Rarity4Star
+import com.example.gachaproductiveapp.ui.theme.Rarity5Star
+import com.example.gachaproductiveapp.ui.theme.SecondaryPurple
+import com.example.gachaproductiveapp.ui.theme.TextMuted
+import com.example.gachaproductiveapp.ui.theme.TextPrimary
+import com.example.gachaproductiveapp.ui.theme.TextSecondary
 import com.example.gachaproductiveapp.viewmodel.MainViewModel
 import kotlinx.coroutines.delay
 
@@ -69,11 +86,7 @@ fun GachaScreen(viewModel: MainViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460))
-                )
-            )
+            .background(DarkBackground)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -81,68 +94,89 @@ fun GachaScreen(viewModel: MainViewModel) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Top Bar: Genshin Style (Title + Currency Top Right)
+            // Header
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Wish Banner", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
-                        Text("Daily Streak: ${state?.loginStreak ?: 0} days", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.7f))
-                    }
-                    // Currency Badge Top Right
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color.Black.copy(alpha = 0.6f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD69E2E))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFD69E2E), modifier = Modifier.size(18.dp))
-                            Text("$currency Favor", color = Color.White, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
+                SectionHeader(
+                    title = "Event Wish Banner",
+                    subtitle = "Summon featured rewards using Favor"
+                )
             }
 
-            // Featured Wish Banner Card (Genshin Style)
+            // Featured Wish Banner Card
             item {
-                Card(
+                GlassCard(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF222831))
+                    backgroundColor = DarkSurface,
+                    borderColor = PrimaryGold.copy(alpha = 0.5f)
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
                                 Brush.linearGradient(
-                                    colors = listOf(Color(0xFF4A154B), Color(0xFF6B46C1), Color(0xFFD69E2E))
+                                    colors = listOf(
+                                        Color(0xFF3B0764),
+                                        Color(0xFF6B21A8),
+                                        Color(0xFF78350F)
+                                    )
                                 )
                             )
-                            .padding(24.dp)
                     ) {
-                        Column {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = PrimaryGold.copy(alpha = 0.25f),
+                                    border = BorderStroke(1.dp, PrimaryGold)
+                                ) {
+                                    Text(
+                                        text = "★ Rate-UP Event Banner",
+                                        color = PrimaryGold,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                    )
+                                }
+
+                                RarityBadge(rarity = Rarity.FIVE_STAR)
+                            }
+
+                            if (featuredReward?.imageUrl?.isNotBlank() == true) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(140.dp)
+                                        .clip(RoundedCornerShape(14.dp))
+                                ) {
+                                    AsyncImage(
+                                        model = featuredReward.imageUrl,
+                                        contentDescription = featuredReward.name,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            }
+
                             Text(
-                                featuredReward?.name ?: "Set a Featured 5★ in Rewards!",
+                                text = featuredReward?.name ?: "Configure a Featured 5★ Reward in Setup!",
                                 style = MaterialTheme.typography.headlineSmall,
-                                color = Color.White,
+                                color = TextPrimary,
                                 fontWeight = FontWeight.Bold
                             )
-                            Spacer(Modifier.height(4.dp))
+
                             Text(
-                                featuredReward?.description?.takeIf { it.isNotBlank() } ?: "Your ultimate self-reward milestone.",
+                                text = featuredReward?.description?.takeIf { it.isNotBlank() }
+                                    ?: "Earn Favor by finishing tasks and wish for your ultimate milestone reward.",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White.copy(alpha = 0.85f)
+                                color = TextSecondary
                             )
-                            Spacer(Modifier.height(16.dp))
-                            Text("★ Rate-up probability increased for featured reward", style = MaterialTheme.typography.labelSmall, color = Color.Yellow)
                         }
                     }
                 }
@@ -150,88 +184,135 @@ fun GachaScreen(viewModel: MainViewModel) {
 
             // Pity Tracker & Status Card
             item {
-                Card(
+                GlassCard(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1F2937))
+                    backgroundColor = DarkSurfaceVariant
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Pity System & Rules", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
-                        
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Pity System Progress",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = TextPrimary
+                            )
+
+                            val pity5 = state?.pity5Counter ?: 0
+                            Text(
+                                text = "$pity5 / ${GachaEngine.HARD_PITY}",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = PrimaryGold
+                            )
+                        }
+
                         val pity5 = state?.pity5Counter ?: 0
-                        val pityProgress = pity5.toFloat() / GachaEngine.HARD_PITY
-                        Text("5★ Pity: $pity5 / ${GachaEngine.HARD_PITY}", color = Color.White.copy(alpha = 0.9f))
+                        val pityProgress = pity5.toFloat() / GachaEngine.HARD_PITY.toFloat()
+
                         LinearProgressIndicator(
                             progress = { pityProgress },
-                            modifier = Modifier.fillMaxWidth(),
-                            color = Color(0xFFD69E2E),
-                            trackColor = Color.DarkGray
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            color = PrimaryGold,
+                            trackColor = DarkBackground
                         )
 
                         val guaranteed = state?.guaranteed5 == true
                         Text(
-                            if (guaranteed) "Next 5★ is guaranteed to be featured" else "Current 5★ featured chance: 50%",
+                            text = if (guaranteed) "★ Next 5★ is GUARANTEED to be the featured reward!" else "Current 5★ featured rate: 50%",
                             style = MaterialTheme.typography.bodySmall,
-                            color = if (guaranteed) Color(0xFFEF4444) else Color(0xFF60A5FA),
+                            color = if (guaranteed) PrimaryGold else Color(0xFF60A5FA),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
             }
 
-            // Wish Action Buttons (Genshin Bottom Bar Style)
+            // Wish Action Buttons Bar
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Button(
+                    GradientButton(
+                        text = "Wish x1 (${GachaEngine.PULL_COST} Favor)",
                         onClick = {
                             animatingResults = null
                             isAnimating = true
                             viewModel.pullSingle()
                         },
                         enabled = currency >= GachaEngine.PULL_COST && !isAnimating,
-                        modifier = Modifier.weight(1f).height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD69E2E))
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Wish x1", fontWeight = FontWeight.Bold, color = Color.Black)
-                            Text("${GachaEngine.PULL_COST} Favor", style = MaterialTheme.typography.labelSmall, color = Color.Black.copy(alpha = 0.8f))
-                        }
-                    }
-                    Button(
+                        brush = Brush.horizontalGradient(listOf(PrimaryGold, Color(0xFFD97706))),
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    GradientButton(
+                        text = "Wish x5 (${GachaEngine.MULTI_PULL_COST} Favor)",
                         onClick = {
                             animatingResults = null
                             isAnimating = true
                             viewModel.pullFive()
                         },
                         enabled = currency >= GachaEngine.MULTI_PULL_COST && !isAnimating,
-                        modifier = Modifier.weight(1f).height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF805AD5))
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Wish x5", fontWeight = FontWeight.Bold, color = Color.White)
-                            Text("${GachaEngine.MULTI_PULL_COST} Favor", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.8f))
-                        }
-                    }
+                        brush = Brush.horizontalGradient(listOf(SecondaryPurple, Color(0xFF6D28D9))),
+                        textColor = Color.White,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
 
-            // Developer Tools Card
+            // Developer Testing Tools Section
             item {
-                Card(
+                GlassCard(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF374151))
+                    backgroundColor = DarkSurfaceVariant
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Developer Testing Tools", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Developer Testing Shortcuts",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = TextSecondary
+                        )
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = { viewModel.devAddFavor() }, modifier = Modifier.weight(1f)) { Text("+5k Favor") }
-                            Button(onClick = { viewModel.devResetPity() }, modifier = Modifier.weight(1f)) { Text("Reset Pity") }
+                            Button(
+                                onClick = { viewModel.devAddFavor() },
+                                colors = ButtonDefaults.buttonColors(containerColor = DarkSurface),
+                                modifier = Modifier.weight(1f)
+                            ) { Text("+5k Favor", color = TextPrimary) }
+
+                            Button(
+                                onClick = { viewModel.devResetPity() },
+                                colors = ButtonDefaults.buttonColors(containerColor = DarkSurface),
+                                modifier = Modifier.weight(1f)
+                            ) { Text("Reset Pity", color = TextPrimary) }
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = { animatingResults = null; isAnimating = true; viewModel.devFreePullSingle() }, enabled = !isAnimating, modifier = Modifier.weight(1f)) { Text("Free Wish x1") }
-                            Button(onClick = { animatingResults = null; isAnimating = true; viewModel.devFreePullFive() }, enabled = !isAnimating, modifier = Modifier.weight(1f)) { Text("Free Wish x5 (Inf)") }
+                            Button(
+                                onClick = { animatingResults = null; isAnimating = true; viewModel.devFreePullSingle() },
+                                enabled = !isAnimating,
+                                colors = ButtonDefaults.buttonColors(containerColor = DarkSurface),
+                                modifier = Modifier.weight(1f)
+                            ) { Text("Free Wish x1", color = PrimaryGold) }
+
+                            Button(
+                                onClick = { animatingResults = null; isAnimating = true; viewModel.devFreePullFive() },
+                                enabled = !isAnimating,
+                                colors = ButtonDefaults.buttonColors(containerColor = DarkSurface),
+                                modifier = Modifier.weight(1f)
+                            ) { Text("Free Wish x5", color = SecondaryPurple) }
                         }
                     }
                 }
@@ -272,17 +353,17 @@ fun GachaAnimationOverlay(
     val hasFourStar = results.any { it.rarity == Rarity.FOUR_STAR }
 
     val primaryColor = when {
-        hasFiveStar -> Color(0xFFD69E2E) // Gold SSR
-        hasFourStar -> Color(0xFF805AD5) // Purple SR
-        else -> Color(0xFF3182CE) // Blue R
+        hasFiveStar -> Rarity5Star
+        hasFourStar -> Rarity4Star
+        else -> Rarity3Star
     }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "gacha")
+    val infiniteTransition = rememberInfiniteTransition(label = "gacha_overlay")
     val scale by infiniteTransition.animateFloat(
         initialValue = 0.85f,
-        targetValue = 1.25f,
+        targetValue = 1.30f,
         animationSpec = infiniteRepeatable(
-            animation = tween(600, easing = FastOutSlowInEasing),
+            animation = tween(650, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "scale"
@@ -296,7 +377,7 @@ fun GachaAnimationOverlay(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.92f))
+            .background(Color.Black.copy(alpha = 0.94f))
             .clickable { onFinished() },
         contentAlignment = Alignment.Center
     ) {
@@ -316,24 +397,32 @@ fun GachaAnimationOverlay(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    Icons.Default.Star,
+                    imageVector = Icons.Default.AutoAwesome,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(72.dp)
+                    modifier = Modifier.size(80.dp)
                 )
             }
+
             Spacer(Modifier.height(32.dp))
+
             Text(
-                if (hasFiveStar) "Legendary pull" else if (hasFourStar) "Epic pull" else "Summoning...",
+                text = when {
+                    hasFiveStar -> "✨ LEGENDARY 5★ PULL! ✨"
+                    hasFourStar -> "★ EPIC 4★ PULL!"
+                    else -> "Summoning Wish..."
+                },
                 style = MaterialTheme.typography.headlineMedium,
                 color = primaryColor,
                 fontWeight = FontWeight.Bold
             )
+
             Spacer(Modifier.height(8.dp))
+
             Text(
-                "Tap anywhere to reveal",
+                text = "Tap anywhere to reveal rewards",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.6f)
+                color = Color.White.copy(alpha = 0.7f)
             )
         }
     }
@@ -350,7 +439,7 @@ fun SSRResultsDialog(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.95f))
-            .padding(24.dp),
+            .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -358,45 +447,40 @@ fun SSRResultsDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // SSR Badge (Inspired by Chinese SSR Pull Screen)
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color(0xFF1F2937),
-                border = androidx.compose.foundation.BorderStroke(2.dp, Color(0xFFD69E2E)),
-                shadowElevation = 12.dp
+            GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = DarkSurfaceVariant,
+                borderColor = if (hasFiveStar) Rarity5Star else SecondaryPurple
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        if (hasFiveStar) "Legendary Reward Pulled" else "Pull Results",
+                        text = if (hasFiveStar) "✨ Legendary Wish Unlocked! ✨" else "Wish Results",
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFFD69E2E),
+                        color = if (hasFiveStar) Rarity5Star else TextPrimary,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(Modifier.height(12.dp))
+
+                    Spacer(Modifier.height(14.dp))
 
                     LazyColumn(
                         modifier = Modifier.height(360.dp).fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         items(results) { r ->
                             val color = when (r.rarity) {
-                                Rarity.FIVE_STAR -> Color(0xFFD69E2E)
-                                Rarity.FOUR_STAR -> Color(0xFF805AD5)
-                                Rarity.THREE_STAR -> Color(0xFF3182CE)
+                                Rarity.FIVE_STAR -> Rarity5Star
+                                Rarity.FOUR_STAR -> Rarity4Star
+                                Rarity.THREE_STAR -> Rarity3Star
                             }
-                            val stars = when (r.rarity) {
-                                Rarity.FIVE_STAR -> "★★★★★"
-                                Rarity.FOUR_STAR -> "★★★★☆"
-                                Rarity.THREE_STAR -> "★★★☆☆"
-                            }
+
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                color = color.copy(alpha = 0.2f),
-                                shape = RoundedCornerShape(12.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, color)
+                                color = color.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(14.dp),
+                                border = BorderStroke(1.dp, color.copy(alpha = 0.6f))
                             ) {
                                 Row(
                                     modifier = Modifier.padding(12.dp).fillMaxWidth(),
@@ -407,20 +491,29 @@ fun SSRResultsDialog(
                                         AsyncImage(
                                             model = r.reward.imageUrl,
                                             contentDescription = r.reward.name,
-                                            modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)),
+                                            modifier = Modifier
+                                                .size(60.dp)
+                                                .clip(RoundedCornerShape(10.dp)),
                                             contentScale = ContentScale.Crop
                                         )
                                     }
+
                                     Column(modifier = Modifier.weight(1f)) {
-                                        Text(stars, color = color, fontWeight = FontWeight.Bold)
+                                        RarityBadge(rarity = r.rarity)
+                                        Spacer(Modifier.height(4.dp))
                                         Text(
-                                            r.reward?.name ?: "(No reward configured)",
+                                            text = r.reward?.name ?: "(No reward configured)",
                                             style = MaterialTheme.typography.titleMedium,
-                                            color = Color.White,
-                                            fontWeight = FontWeight.SemiBold
+                                            color = TextPrimary,
+                                            fontWeight = FontWeight.Bold
                                         )
                                         if (r.isFeatured) {
-                                            Text("Featured 5-star reward", color = Color(0xFFD69E2E), fontWeight = FontWeight.Bold)
+                                            Text(
+                                                text = "Featured Rate-UP Reward!",
+                                                color = Rarity5Star,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontWeight = FontWeight.Bold
+                                            )
                                         }
                                     }
                                 }
@@ -430,14 +523,11 @@ fun SSRResultsDialog(
                 }
             }
 
-            // Bottom Action Buttons (Inspired by SSR pull screen bottom action bar)
-            Button(
+            GradientButton(
+                text = "Collect Rewards",
                 onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD69E2E))
-            ) {
-                Text("Next / Collect", style = MaterialTheme.typography.titleMedium, color = Color.Black, fontWeight = FontWeight.Bold)
-            }
+                modifier = Modifier.fillMaxWidth().height(52.dp)
+            )
         }
     }
 }
