@@ -210,7 +210,7 @@ private fun AddEditRewardDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { if (name.isNotBlank()) onSave(name, description, rarity, featured, imageUrl) }) {
+            TextButton(onClick = { if (name.isNotBlank()) onSave(name, description, rarity, featured && rarity == Rarity.FIVE_STAR, imageUrl) }) {
                 Text(if (rewardToEdit == null) "Add" else "Save")
             }
         },

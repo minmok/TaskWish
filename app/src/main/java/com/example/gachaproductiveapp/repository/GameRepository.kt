@@ -56,22 +56,32 @@ class GameRepository(
     }
 
     suspend fun addReward(name: String, description: String, rarity: Rarity, isFeatured: Boolean, imageUrl: String) {
-        if (rarity == Rarity.FIVE_STAR && isFeatured) {
+        val normalizedFeatured = rarity == Rarity.FIVE_STAR && isFeatured
+        if (normalizedFeatured) {
             // only one featured 5-star at a time
             rewardDao.getByRarity(Rarity.FIVE_STAR).forEach {
                 if (it.isFeatured) rewardDao.update(it.copy(isFeatured = false))
             }
         }
-        rewardDao.insert(Reward(name = name, description = description, rarity = rarity, isFeatured = isFeatured, imageUrl = imageUrl))
+        rewardDao.insert(
+            Reward(
+                name = name,
+                description = description,
+                rarity = rarity,
+                isFeatured = normalizedFeatured,
+                imageUrl = imageUrl
+            )
+        )
     }
 
     suspend fun updateReward(reward: Reward) {
-        if (reward.rarity == Rarity.FIVE_STAR && reward.isFeatured) {
+        val normalizedReward = if (reward.rarity == Rarity.FIVE_STAR) reward else reward.copy(isFeatured = false)
+        if (normalizedReward.rarity == Rarity.FIVE_STAR && normalizedReward.isFeatured) {
             rewardDao.getByRarity(Rarity.FIVE_STAR).forEach {
-                if (it.id != reward.id && it.isFeatured) rewardDao.update(it.copy(isFeatured = false))
+                if (it.id != normalizedReward.id && it.isFeatured) rewardDao.update(it.copy(isFeatured = false))
             }
         }
-        rewardDao.update(reward)
+        rewardDao.update(normalizedReward)
     }
 
     suspend fun canClaimDailyLogin(): Boolean = DailyLoginManager.canClaimToday(ensureUserState())
@@ -146,6 +156,12 @@ class GameRepository(
     }
 
     suspend fun useReward(reward: Reward) {
-        rewardDao.update(reward.copy(timesUsed = reward.timesUsed + 1))
+        if (reward.timesWon <= 0) return
+        rewardDao.update(
+            reward.copy(
+                timesWon = reward.timesWon - 1,
+                timesUsed = reward.timesUsed + 1
+            )
+        )
     }
 }

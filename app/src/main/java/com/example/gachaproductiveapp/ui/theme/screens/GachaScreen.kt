@@ -186,6 +186,7 @@ fun GachaScreen(viewModel: MainViewModel) {
                 ) {
                     Button(
                         onClick = {
+                            animatingResults = null
                             isAnimating = true
                             viewModel.pullSingle()
                         },
@@ -200,6 +201,7 @@ fun GachaScreen(viewModel: MainViewModel) {
                     }
                     Button(
                         onClick = {
+                            animatingResults = null
                             isAnimating = true
                             viewModel.pullFive()
                         },
@@ -228,8 +230,8 @@ fun GachaScreen(viewModel: MainViewModel) {
                             Button(onClick = { viewModel.devResetPity() }, modifier = Modifier.weight(1f)) { Text("Reset Pity") }
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = { isAnimating = true; viewModel.devFreePullSingle() }, enabled = !isAnimating, modifier = Modifier.weight(1f)) { Text("Free Wish x1") }
-                            Button(onClick = { isAnimating = true; viewModel.devFreePullFive() }, enabled = !isAnimating, modifier = Modifier.weight(1f)) { Text("Free Wish x5 (Inf)") }
+                            Button(onClick = { animatingResults = null; isAnimating = true; viewModel.devFreePullSingle() }, enabled = !isAnimating, modifier = Modifier.weight(1f)) { Text("Free Wish x1") }
+                            Button(onClick = { animatingResults = null; isAnimating = true; viewModel.devFreePullFive() }, enabled = !isAnimating, modifier = Modifier.weight(1f)) { Text("Free Wish x5 (Inf)") }
                         }
                     }
                 }
@@ -250,6 +252,7 @@ fun GachaScreen(viewModel: MainViewModel) {
             results = animatingResults!!,
             onFinished = {
                 isAnimating = false
+                animatingResults = null
             }
         )
     } else if (lastResult != null && !isAnimating) {
