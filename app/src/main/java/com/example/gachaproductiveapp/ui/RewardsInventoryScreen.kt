@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,13 +41,14 @@ import com.example.gachaproductiveapp.viewmodel.MainViewModel
 fun RewardsInventoryScreen(viewModel: MainViewModel) {
     val rewards by viewModel.rewards.collectAsState()
     val wonRewards = rewards.filter { it.timesWon > 0 }
+    var rewardToDelete by remember { mutableStateOf<Reward?>(null) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("Rewards Inventory", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Tap any available reward to use one copy.", style = MaterialTheme.typography.bodyMedium)
+        Text("Tap any available reward to use one copy:", style = MaterialTheme.typography.bodyMedium)
 
         if (wonRewards.isEmpty()) {
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -60,16 +65,36 @@ fun RewardsInventoryScreen(viewModel: MainViewModel) {
                 items(wonRewards, key = { it.id }) { reward ->
                     InventoryRewardCard(
                         reward = reward,
-                        onUse = { viewModel.useReward(reward) }
+                        onUse = { viewModel.useReward(reward) },
+                        onDelete = { rewardToDelete = reward }
                     )
                 }
             }
         }
     }
+
+    if (rewardToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { rewardToDelete = null },
+            title = { Text("Delete Reward?") },
+            text = { Text("Are you sure you want to delete \"${rewardToDelete?.name}\" from your inventory?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        rewardToDelete?.let { viewModel.deleteReward(it) }
+                        rewardToDelete = null
+                    }
+                ) { Text("Yes, Delete") }
+            },
+            dismissButton = {
+                TextButton(onClick = { rewardToDelete = null }) { Text("Cancel") }
+            }
+        )
+    }
 }
 
 @Composable
-private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
+private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit, onDelete: () -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     val color = when (reward.rarity) {
@@ -95,7 +120,7 @@ private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
                 AsyncImage(
                     model = reward.imageUrl,
                     contentDescription = reward.name,
-                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)),
+                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
             }
@@ -118,6 +143,9 @@ private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
                     color = if (reward.remainingCount > 0) color else MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
+            }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete Reward", tint = MaterialTheme.colorScheme.error)
             }
         }
     }

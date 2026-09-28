@@ -84,6 +84,10 @@ class GameRepository(
         rewardDao.update(normalizedReward)
     }
 
+    suspend fun deleteReward(reward: Reward) {
+        rewardDao.delete(reward)
+    }
+
     suspend fun canClaimDailyLogin(): Boolean = DailyLoginManager.canClaimToday(ensureUserState())
 
     suspend fun claimDailyLogin(): Int {

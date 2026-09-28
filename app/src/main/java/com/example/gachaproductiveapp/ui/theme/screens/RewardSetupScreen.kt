@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -24,6 +26,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -51,6 +55,7 @@ fun RewardSetupScreen(viewModel: MainViewModel) {
     val rewards by viewModel.rewards.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var editingReward by remember { mutableStateOf<Reward?>(null) }
+    var rewardToDelete by remember { mutableStateOf<Reward?>(null) }
 
     Scaffold(
         floatingActionButton = {
@@ -67,10 +72,16 @@ fun RewardSetupScreen(viewModel: MainViewModel) {
             items(Rarity.entries.toList()) { rarity ->
                 Text(rarity.name, style = MaterialTheme.typography.titleMedium)
                 rewards.filter { it.rarity == rarity }.forEach { reward ->
-                    RewardRow(reward = reward, onClick = {
-                        editingReward = reward
-                        showDialog = true
-                    })
+                    RewardRow(
+                        reward = reward,
+                        onClick = {
+                            editingReward = reward
+                            showDialog = true
+                        },
+                        onDelete = {
+                            rewardToDelete = reward
+                        }
+                    )
                 }
                 Spacer(Modifier.height(8.dp))
             }
@@ -100,13 +111,39 @@ fun RewardSetupScreen(viewModel: MainViewModel) {
                 }
                 showDialog = false
                 editingReward = null
+            },
+            onDelete = {
+                if (editingReward != null) {
+                    rewardToDelete = editingReward
+                    showDialog = false
+                    editingReward = null
+                }
+            }
+        )
+    }
+
+    if (rewardToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { rewardToDelete = null },
+            title = { Text("Delete Reward?") },
+            text = { Text("Are you sure you want to delete \"${rewardToDelete?.name}\"?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        rewardToDelete?.let { viewModel.deleteReward(it) }
+                        rewardToDelete = null
+                    }
+                ) { Text("Yes, Delete") }
+            },
+            dismissButton = {
+                TextButton(onClick = { rewardToDelete = null }) { Text("Cancel") }
             }
         )
     }
 }
 
 @Composable
-private fun RewardRow(reward: Reward, onClick: () -> Unit) {
+private fun RewardRow(reward: Reward, onClick: () -> Unit, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() }
     ) {
@@ -130,6 +167,9 @@ private fun RewardRow(reward: Reward, onClick: () -> Unit) {
                 }
                 Text("Won ${reward.timesWon}x · Tap to edit", style = MaterialTheme.typography.labelSmall)
             }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete Reward", tint = MaterialTheme.colorScheme.error)
+            }
         }
     }
 }
@@ -139,7 +179,8 @@ private fun RewardRow(reward: Reward, onClick: () -> Unit) {
 private fun AddEditRewardDialog(
     rewardToEdit: Reward?,
     onDismiss: () -> Unit,
-    onSave: (String, String, Rarity, Boolean, String) -> Unit
+    onSave: (String, String, Rarity, Boolean, String) -> Unit,
+    onDelete: () -> Unit
 ) {
     var name by remember { mutableStateOf(rewardToEdit?.name ?: "") }
     var description by remember { mutableStateOf(rewardToEdit?.description ?: "") }
@@ -210,8 +251,15 @@ private fun AddEditRewardDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { if (name.isNotBlank()) onSave(name, description, rarity, featured && rarity == Rarity.FIVE_STAR, imageUrl) }) {
-                Text(if (rewardToEdit == null) "Add" else "Save")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (rewardToEdit != null) {
+                    TextButton(onClick = onDelete) {
+                        Text("Delete", color = MaterialTheme.colorScheme.error)
+                    }
+                }
+                TextButton(onClick = { if (name.isNotBlank()) onSave(name, description, rarity, featured && rarity == Rarity.FIVE_STAR, imageUrl) }) {
+                    Text(if (rewardToEdit == null) "Add" else "Save")
+                }
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }

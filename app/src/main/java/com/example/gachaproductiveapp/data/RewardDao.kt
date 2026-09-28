@@ -1,6 +1,7 @@
 package com.example.gachaproductiveapp.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -25,4 +26,7 @@ interface RewardDao {
 
     @Query("SELECT * FROM rewards WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): Reward?
+
+    @Delete
+    suspend fun delete(reward: Reward)
 }
