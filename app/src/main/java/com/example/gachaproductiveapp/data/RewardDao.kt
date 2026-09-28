@@ -22,4 +22,7 @@ interface RewardDao {
 
     @Query("SELECT * FROM rewards WHERE rarity = 'FIVE_STAR' AND isFeatured = 1 LIMIT 1")
     suspend fun getFeaturedFiveStar(): Reward?
+
+    @Query("SELECT * FROM rewards WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): Reward?
 }

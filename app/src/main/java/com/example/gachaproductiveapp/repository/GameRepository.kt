@@ -110,7 +110,7 @@ class GameRepository(
         if (!pool.hasAnyReward()) return null
         val (result, updatedState) = GachaEngine.rollOnce(state, pool)
         userStateDao.upsert(updatedState.copy(currency = state.currency - GachaEngine.PULL_COST))
-        bumpTimesWon(result)
+        bumpTimesWonResults(listOf(result))
         return result
     }
 
@@ -121,7 +121,7 @@ class GameRepository(
         if (!pool.hasAnyReward()) return null
         val (results, updatedState) = GachaEngine.rollFive(state, pool)
         userStateDao.upsert(updatedState.copy(currency = state.currency - GachaEngine.MULTI_PULL_COST))
-        results.forEach { bumpTimesWon(it) }
+        bumpTimesWonResults(results)
         return results
     }
 
@@ -141,7 +141,7 @@ class GameRepository(
         if (!pool.hasAnyReward()) return null
         val (result, updatedState) = GachaEngine.rollOnce(state, pool)
         userStateDao.upsert(updatedState)
-        bumpTimesWon(result)
+        bumpTimesWonResults(listOf(result))
         return result
     }
 
@@ -151,12 +151,18 @@ class GameRepository(
         if (!pool.hasAnyReward()) return null
         val (results, updatedState) = GachaEngine.rollFive(state, pool)
         userStateDao.upsert(updatedState)
-        results.forEach { bumpTimesWon(it) }
+        bumpTimesWonResults(results)
         return results
     }
 
-    private suspend fun bumpTimesWon(result: PullResult) {
-        result.reward?.let { rewardDao.update(it.copy(timesWon = it.timesWon + 1)) }
+    private suspend fun bumpTimesWonResults(results: List<PullResult>) {
+        val rewardCounts = results.mapNotNull { it.reward }.groupingBy { it.id }.eachCount()
+        for ((rewardId, count) in rewardCounts) {
+            val currentReward = rewardDao.getById(rewardId)
+            if (currentReward != null) {
+                rewardDao.update(currentReward.copy(timesWon = currentReward.timesWon + count))
+            }
+        }
     }
 
     suspend fun useReward(reward: Reward) {

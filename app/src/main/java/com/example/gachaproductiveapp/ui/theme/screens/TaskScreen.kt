@@ -42,6 +42,8 @@ import com.example.gachaproductiveapp.viewmodel.MainViewModel
 fun TaskScreen(viewModel: MainViewModel) {
     val tasks by viewModel.tasks.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var showClearCompletedDialog by remember { mutableStateOf(false) }
+    var showDeleteAllDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         floatingActionButton = {
@@ -59,13 +61,13 @@ fun TaskScreen(viewModel: MainViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     OutlinedButton(
-                        onClick = { viewModel.deleteCompletedTasks() },
+                        onClick = { showClearCompletedDialog = true },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text("Clear Completed")
                     }
                     OutlinedButton(
-                        onClick = { viewModel.deleteAllTasks() },
+                        onClick = { showDeleteAllDialog = true },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text("Delete All Tasks")
@@ -86,6 +88,44 @@ fun TaskScreen(viewModel: MainViewModel) {
                 }
             }
         }
+    }
+
+    if (showClearCompletedDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearCompletedDialog = false },
+            title = { Text("Clear Completed Tasks?") },
+            text = { Text("Are you sure you want to remove all completed tasks from your list?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteCompletedTasks()
+                        showClearCompletedDialog = false
+                    }
+                ) { Text("Yes, Clear") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearCompletedDialog = false }) { Text("Cancel") }
+            }
+        )
+    }
+
+    if (showDeleteAllDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAllDialog = false },
+            title = { Text("Delete All Tasks?") },
+            text = { Text("Are you sure you want to delete ALL tasks from your list? This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteAllTasks()
+                        showDeleteAllDialog = false
+                    }
+                ) { Text("Yes, Delete All") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteAllDialog = false }) { Text("Cancel") }
+            }
+        )
     }
 
     if (showAddDialog) {
