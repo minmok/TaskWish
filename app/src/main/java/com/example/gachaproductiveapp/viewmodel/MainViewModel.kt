@@ -79,6 +79,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         repository.updateReward(reward)
     }
 
+    fun useReward(reward: Reward) = viewModelScope.launch {
+        repository.useReward(reward)
+    }
+
     fun claimDailyLogin() = viewModelScope.launch {
         val bonus = repository.claimDailyLogin()
         _dailyLoginBonus.value = bonus

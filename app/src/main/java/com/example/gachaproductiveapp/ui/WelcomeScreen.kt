@@ -1,5 +1,6 @@
 package com.example.gachaproductiveapp.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,8 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.gachaproductiveapp.R
 import com.example.gachaproductiveapp.viewmodel.MainViewModel
 
 @Composable
@@ -47,6 +51,15 @@ fun WelcomeScreen(viewModel: MainViewModel, onEntered: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // App Logo Splash Image
+            Image(
+                painter = painterResource(id = R.drawable.app_logo),
+                contentDescription = "TaskWish Logo",
+                modifier = Modifier.size(130.dp)
+            )
+
+            Spacer(Modifier.height(4.dp))
+
             Text(
                 "✨ TaskWish ✨",
                 style = MaterialTheme.typography.headlineLarge,

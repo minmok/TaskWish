@@ -1,5 +1,6 @@
 package com.example.gachaproductiveapp.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,12 +11,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +43,7 @@ fun RewardsInventoryScreen(viewModel: MainViewModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("🎒 Rewards Inventory", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("All self-rewards you have successfully pulled from wishes:", style = MaterialTheme.typography.bodyMedium)
+        Text("Tap any won reward to use it and log it as redeemed:", style = MaterialTheme.typography.bodyMedium)
 
         if (wonRewards.isEmpty()) {
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -52,7 +58,10 @@ fun RewardsInventoryScreen(viewModel: MainViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(wonRewards, key = { it.id }) { reward ->
-                    InventoryRewardCard(reward)
+                    InventoryRewardCard(
+                        reward = reward,
+                        onUse = { viewModel.useReward(reward) }
+                    )
                 }
             }
         }
@@ -60,7 +69,9 @@ fun RewardsInventoryScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-private fun InventoryRewardCard(reward: Reward) {
+private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+
     val color = when (reward.rarity) {
         Rarity.FIVE_STAR -> androidx.compose.ui.graphics.Color(0xFFD69E2E)
         Rarity.FOUR_STAR -> androidx.compose.ui.graphics.Color(0xFF805AD5)
@@ -72,7 +83,9 @@ private fun InventoryRewardCard(reward: Reward) {
         Rarity.THREE_STAR -> "★★★☆☆"
     }
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { showDialog = true }
+    ) {
         Row(
             modifier = Modifier.padding(12.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -92,8 +105,31 @@ private fun InventoryRewardCard(reward: Reward) {
                 if (reward.description.isNotBlank()) {
                     Text(reward.description, style = MaterialTheme.typography.bodySmall)
                 }
-                Text("Won: ${reward.timesWon}x", style = MaterialTheme.typography.labelSmall, color = color)
+                Text("Won: ${reward.timesWon}x · Used: ${reward.timesUsed}x", style = MaterialTheme.typography.labelSmall, color = color)
             }
         }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Use Reward?") },
+            text = { Text("Do you want to use \"${reward.name}\"? This will log it as redeemed.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onUse()
+                        showDialog = false
+                    }
+                ) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
     }
 }

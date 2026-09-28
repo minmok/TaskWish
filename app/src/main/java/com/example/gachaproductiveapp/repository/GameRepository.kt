@@ -144,4 +144,8 @@ class GameRepository(
     private suspend fun bumpTimesWon(result: PullResult) {
         result.reward?.let { rewardDao.update(it.copy(timesWon = it.timesWon + 1)) }
     }
+
+    suspend fun useReward(reward: Reward) {
+        rewardDao.update(reward.copy(timesUsed = reward.timesUsed + 1))
+    }
 }

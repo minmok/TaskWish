@@ -13,5 +13,6 @@ data class Reward(
     val rarity: Rarity,
     val isFeatured: Boolean = false, // only meaningful for FIVE_STAR
     val timesWon: Int = 0,
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val timesUsed: Int = 0
 )
