@@ -67,7 +67,7 @@ TaskWish/
 ## Tech stack
 
 - Kotlin + JVM toolchain 11
-- Android Gradle Plugin 8.8.2
+- Android Gradle Plugin 8.7.3
 - Gradle Wrapper 9.5.0
 - Jetpack Compose (BOM 2024.12.01) + Material 3
 - AndroidX Lifecycle / ViewModel
