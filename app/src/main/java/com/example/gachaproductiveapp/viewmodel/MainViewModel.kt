@@ -109,11 +109,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun devFreePullSingle() = viewModelScope.launch {
-        _lastPullResult.value = listOf(repository.devFreePullSingle())
+        repository.devFreePullSingle()?.let { _lastPullResult.value = listOf(it) }
     }
 
     fun devFreePullFive() = viewModelScope.launch {
-        _lastPullResult.value = repository.devFreePullFive()
+        repository.devFreePullFive()?.let { _lastPullResult.value = it }
     }
 
     fun clearPullResult() {

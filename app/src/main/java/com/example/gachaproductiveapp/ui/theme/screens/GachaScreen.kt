@@ -89,7 +89,7 @@ fun GachaScreen(viewModel: MainViewModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("✨ Wish Banner", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Wish Banner", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
                         Text("Daily Streak: ${state?.loginStreak ?: 0} days", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.7f))
                     }
                     // Currency Badge Top Right
@@ -169,7 +169,7 @@ fun GachaScreen(viewModel: MainViewModel) {
 
                         val guaranteed = state?.guaranteed5 == true
                         Text(
-                            if (guaranteed) "🔥 50/50 Lost: Next 5★ is 100% FEATURED!" else "⚡ 50% Chance for Featured 5★",
+                            if (guaranteed) "Next 5★ is guaranteed to be featured" else "Current 5★ featured chance: 50%",
                             style = MaterialTheme.typography.bodySmall,
                             color = if (guaranteed) Color(0xFFEF4444) else Color(0xFF60A5FA),
                             fontWeight = FontWeight.SemiBold
@@ -196,7 +196,7 @@ fun GachaScreen(viewModel: MainViewModel) {
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Wish x1", fontWeight = FontWeight.Bold, color = Color.Black)
-                            Text("💎 ${GachaEngine.PULL_COST} Favor", style = MaterialTheme.typography.labelSmall, color = Color.Black.copy(alpha = 0.8f))
+                            Text("${GachaEngine.PULL_COST} Favor", style = MaterialTheme.typography.labelSmall, color = Color.Black.copy(alpha = 0.8f))
                         }
                     }
                     Button(
@@ -211,7 +211,7 @@ fun GachaScreen(viewModel: MainViewModel) {
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Wish x5", fontWeight = FontWeight.Bold, color = Color.White)
-                            Text("💎 ${GachaEngine.MULTI_PULL_COST} Favor", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.8f))
+                            Text("${GachaEngine.MULTI_PULL_COST} Favor", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.8f))
                         }
                     }
                 }
@@ -224,7 +224,7 @@ fun GachaScreen(viewModel: MainViewModel) {
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF374151))
                 ) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("🛠️ Developer Testing Tools", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("Developer Testing Tools", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = { viewModel.devAddFavor() }, modifier = Modifier.weight(1f)) { Text("+5k Favor") }
                             Button(onClick = { viewModel.devResetPity() }, modifier = Modifier.weight(1f)) { Text("Reset Pity") }
@@ -324,7 +324,7 @@ fun GachaAnimationOverlay(
             }
             Spacer(Modifier.height(32.dp))
             Text(
-                if (hasFiveStar) "✨ SSR LEGENDARY SUMMON! ✨" else if (hasFourStar) "⭐ SR EPIC SUMMON! ⭐" else "💫 Summoning...",
+                if (hasFiveStar) "Legendary pull" else if (hasFourStar) "Epic pull" else "Summoning...",
                 style = MaterialTheme.typography.headlineMedium,
                 color = primaryColor,
                 fontWeight = FontWeight.Bold
@@ -370,7 +370,7 @@ fun SSRResultsDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        if (hasFiveStar) "👑 SSR CONGRATULATIONS! 👑" else "🌟 SUMMON RESULTS 🌟",
+                        if (hasFiveStar) "Legendary Reward Pulled" else "Pull Results",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color(0xFFD69E2E),
                         fontWeight = FontWeight.Bold
@@ -420,7 +420,7 @@ fun SSRResultsDialog(
                                             fontWeight = FontWeight.SemiBold
                                         )
                                         if (r.isFeatured) {
-                                            Text("🎉 FEATURED 5-STAR REWARD!", color = Color(0xFFD69E2E), fontWeight = FontWeight.Bold)
+                                            Text("Featured 5-star reward", color = Color(0xFFD69E2E), fontWeight = FontWeight.Bold)
                                         }
                                     }
                                 }

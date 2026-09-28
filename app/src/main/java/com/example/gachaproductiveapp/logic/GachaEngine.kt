@@ -16,10 +16,24 @@ class RewardPool(
     private val rewardsByRarity: Map<Rarity, List<Reward>>,
     val featuredFiveStar: Reward?
 ) {
+    fun hasAnyReward(): Boolean = rewardsByRarity.values.any { it.isNotEmpty() }
+
     fun randomFrom(rarity: Rarity, excludeFeatured: Boolean = false): Reward? {
         val list = rewardsByRarity[rarity].orEmpty()
             .let { if (excludeFeatured) it.filterNot { r -> r.isFeatured } else it }
         return if (list.isEmpty()) null else list.random()
+    }
+
+    fun fallbackReward(targetRarity: Rarity): Reward? {
+        val fallbackOrder = when (targetRarity) {
+            Rarity.FIVE_STAR -> listOf(Rarity.FIVE_STAR, Rarity.FOUR_STAR, Rarity.THREE_STAR)
+            Rarity.FOUR_STAR -> listOf(Rarity.FOUR_STAR, Rarity.FIVE_STAR, Rarity.THREE_STAR)
+            Rarity.THREE_STAR -> listOf(Rarity.THREE_STAR, Rarity.FOUR_STAR, Rarity.FIVE_STAR)
+        }
+        for (rarity in fallbackOrder) {
+            randomFrom(rarity)?.let { return it }
+        }
+        return null
     }
 }
 
@@ -78,14 +92,18 @@ object GachaEngine {
                 guaranteed = !wonFeatured
                 isFeatured = wonFeatured
                 if (wonFeatured) {
-                    pool.featuredFiveStar
+                    pool.featuredFiveStar ?: pool.fallbackReward(Rarity.FIVE_STAR)
                 } else {
-                    pool.randomFrom(Rarity.FIVE_STAR, excludeFeatured = true) ?: pool.featuredFiveStar
+                    pool.randomFrom(Rarity.FIVE_STAR, excludeFeatured = true)
+                        ?: pool.featuredFiveStar
+                        ?: pool.fallbackReward(Rarity.FIVE_STAR)
                 }
             }
-            Rarity.FOUR_STAR -> pool.randomFrom(Rarity.FOUR_STAR)
-            Rarity.THREE_STAR -> pool.randomFrom(Rarity.THREE_STAR)
+            Rarity.FOUR_STAR -> pool.randomFrom(Rarity.FOUR_STAR) ?: pool.fallbackReward(Rarity.FOUR_STAR)
+            Rarity.THREE_STAR -> pool.randomFrom(Rarity.THREE_STAR) ?: pool.fallbackReward(Rarity.THREE_STAR)
         }
+
+        val finalRarity = reward?.rarity ?: rarity
 
         val updatedState = state.copy(
             pity5Counter = newPity5,
@@ -93,7 +111,7 @@ object GachaEngine {
             guaranteed5 = guaranteed
         )
 
-        return PullResult(rarity, reward, isFeatured) to updatedState
+        return PullResult(finalRarity, reward, isFeatured) to updatedState
     }
 
     /** 5 sequential rolls so pity carries correctly from one pull to the next. */

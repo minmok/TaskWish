@@ -42,14 +42,14 @@ fun RewardsInventoryScreen(viewModel: MainViewModel) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("🎒 Rewards Inventory", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Tap any available reward to use 1x from your inventory:", style = MaterialTheme.typography.bodyMedium)
+        Text("Rewards Inventory", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text("Tap any available reward to use one copy.", style = MaterialTheme.typography.bodyMedium)
 
         if (wonRewards.isEmpty()) {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("No rewards won yet!", style = MaterialTheme.typography.titleMedium)
-                    Text("Complete tasks, earn Favor, and make a wish!", style = MaterialTheme.typography.bodySmall)
+                    Text("No rewards won yet.", style = MaterialTheme.typography.titleMedium)
+                    Text("Complete tasks, earn Favor, and pull in the Wish tab.", style = MaterialTheme.typography.bodySmall)
                 }
             }
         } else {
@@ -129,7 +129,7 @@ private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
                 title = { Text("Use Reward?") },
                 text = {
                     Text(
-                        "Do you want to use 1x \"${reward.name}\"?\n\n" +
+                        "Use 1x \"${reward.name}\"?\n\n" +
                         "Remaining in inventory: ${reward.remainingCount} -> ${reward.remainingCount - 1}"
                     )
                 },
@@ -140,7 +140,7 @@ private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
                             showDialog = false
                         }
                     ) {
-                        Text("Yes, Use 1x")
+                        Text("Use 1x")
                     }
                 },
                 dismissButton = {
@@ -156,7 +156,7 @@ private fun InventoryRewardCard(reward: Reward, onUse: () -> Unit) {
                 text = {
                     Text(
                         "You have 0 \"${reward.name}\" left in your inventory.\n\n" +
-                        "Complete tasks, earn Favor, and pull in the Wish Banner to win more!"
+                        "Complete tasks, earn Favor, and pull in the Wish tab to win more."
                     )
                 },
                 confirmButton = {

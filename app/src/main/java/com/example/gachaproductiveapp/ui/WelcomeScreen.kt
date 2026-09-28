@@ -61,13 +61,13 @@ fun WelcomeScreen(viewModel: MainViewModel, onEntered: () -> Unit) {
             Spacer(Modifier.height(4.dp))
 
             Text(
-                "✨ TaskWish ✨",
+                "TaskWish",
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color(0xFFD69E2E),
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "Gacha Productivity Manager",
+                "Plan tasks, earn Favor, and unlock rewards",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White.copy(alpha = 0.8f)
             )
@@ -77,7 +77,7 @@ fun WelcomeScreen(viewModel: MainViewModel, onEntered: () -> Unit) {
             OutlinedTextField(
                 value = nameInput,
                 onValueChange = { nameInput = it },
-                label = { Text("Enter your Username") },
+                label = { Text("Username") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -93,7 +93,7 @@ fun WelcomeScreen(viewModel: MainViewModel, onEntered: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD69E2E))
             ) {
-                Text("Start Your Journey", style = MaterialTheme.typography.titleMedium, color = Color.Black, fontWeight = FontWeight.Bold)
+                Text("Get Started", style = MaterialTheme.typography.titleMedium, color = Color.Black, fontWeight = FontWeight.Bold)
             }
         }
     }
