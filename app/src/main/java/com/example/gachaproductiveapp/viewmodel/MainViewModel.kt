@@ -79,6 +79,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         repository.updateReward(reward)
     }
 
+    fun deleteReward(reward: Reward) = viewModelScope.launch {
+        repository.deleteReward(reward)
+    }
+
     fun useReward(reward: Reward) = viewModelScope.launch {
         repository.useReward(reward)
     }

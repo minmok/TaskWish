@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,12 +26,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gachaproductiveapp.R
+import com.example.gachaproductiveapp.ui.components.GlassCard
+import com.example.gachaproductiveapp.ui.components.GradientButton
+import com.example.gachaproductiveapp.ui.theme.DarkBackground
+import com.example.gachaproductiveapp.ui.theme.DarkSurface
+import com.example.gachaproductiveapp.ui.theme.PrimaryGold
+import com.example.gachaproductiveapp.ui.theme.SecondaryPurple
+import com.example.gachaproductiveapp.ui.theme.TextMuted
+import com.example.gachaproductiveapp.ui.theme.TextPrimary
+import com.example.gachaproductiveapp.ui.theme.TextSecondary
 import com.example.gachaproductiveapp.viewmodel.MainViewModel
 
 @Composable
@@ -40,60 +54,101 @@ fun WelcomeScreen(viewModel: MainViewModel, onEntered: () -> Unit) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460))
+                    colors = listOf(
+                        DarkBackground,
+                        Color(0xFF1E1B4B),
+                        Color(0xFF0F172A)
+                    )
                 )
             )
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column(
+        GlassCard(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            backgroundColor = DarkSurface.copy(alpha = 0.85f),
+            borderColor = PrimaryGold.copy(alpha = 0.35f)
         ) {
-            // App Logo Splash Image
-            Image(
-                painter = painterResource(id = R.drawable.app_logo),
-                contentDescription = "TaskWish Logo",
-                modifier = Modifier.size(130.dp)
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                "TaskWish",
-                style = MaterialTheme.typography.headlineLarge,
-                color = Color(0xFFD69E2E),
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                "Plan tasks, earn Favor, and unlock rewards",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White.copy(alpha = 0.8f)
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = nameInput,
-                onValueChange = { nameInput = it },
-                label = { Text("Username") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Button(
-                onClick = {
-                    if (nameInput.isNotBlank()) {
-                        viewModel.setUserName(nameInput.trim())
-                        onEntered()
-                    }
-                },
-                enabled = nameInput.isNotBlank(),
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD69E2E))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(28.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Get Started", style = MaterialTheme.typography.titleMedium, color = Color.Black, fontWeight = FontWeight.Bold)
+                // App Logo with Glowing Aura
+                Box(
+                    modifier = Modifier
+                        .size(130.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(PrimaryGold.copy(alpha = 0.3f), Color.Transparent)
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.app_logo),
+                        contentDescription = "TaskWish Logo",
+                        modifier = Modifier.size(110.dp)
+                    )
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "TaskWish",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = PrimaryGold,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "Turn productivity into wishes and rewards",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = nameInput,
+                    onValueChange = { nameInput = it },
+                    label = { Text("Choose your Traveler Name") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = PrimaryGold
+                        )
+                    },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGold,
+                        unfocusedBorderColor = TextMuted,
+                        focusedLabelColor = PrimaryGold,
+                        unfocusedLabelColor = TextSecondary,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                GradientButton(
+                    text = "Begin Journey",
+                    onClick = {
+                        if (nameInput.isNotBlank()) {
+                            viewModel.setUserName(nameInput.trim())
+                            onEntered()
+                        }
+                    },
+                    enabled = nameInput.isNotBlank(),
+                    brush = Brush.horizontalGradient(listOf(PrimaryGold, SecondaryPurple)),
+                    textColor = Color.White,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
